@@ -1,0 +1,3 @@
+* beyond the middleware pattern
+
+  =lein repl= で起動した後に =(go)= とすることで実際にアプリケーションを動作させることが出来ます。

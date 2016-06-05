@@ -1,6 +1,5 @@
 (ns demo.component.middleware-aggregator
-  (:require [com.stuartsierra.component :as c]
-            [com.stuartsierra.dependency :as dep]
+  (:require [com.stuartsierra.dependency :as dep]
             [demo.component.middleware.proto :as p]))
 
 (defn- build-deps-graph [deps-map]
@@ -14,20 +13,18 @@
             [id anc type])))
 
 (defrecord MiddlewareAggregator [middlewares dependency-map]
-  c/Lifecycle
-  (start [this]
-    (println "Start middleware")
-    this)
-  (stop [this]
-    (println "Stop middleware")
-    this)
-
   p/IMiddleware
   (wrap [this handler]
-    (-> (build-deps-graph dependency-map)
-        dep/topo-comparator
-        (sort (keys middlewares))
-        (->> (reduce (fn [f k]
-                       (println "Applying middleware:" k)
-                       (p/wrap (get middlewares k) f))
-                     handler)))))
+    (let [ms (reduce (fn [ms [k v]]
+                       (if (satisfies? p/IMiddleware v)
+                         (assoc ms k v)
+                         ms))
+                     (or middlewares {})
+                     this)]
+      (-> (build-deps-graph dependency-map)
+          dep/topo-comparator
+          (sort (keys ms))
+          (->> (reduce (fn [f k]
+                         (println "Applying middleware:" k)
+                         (p/wrap (get ms k) f))
+                       handler))))))

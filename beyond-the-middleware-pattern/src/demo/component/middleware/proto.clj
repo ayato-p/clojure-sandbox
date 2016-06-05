@@ -4,6 +4,6 @@
   (wrap [this handler]))
 
 (extend-protocol IMiddleware
-  clojure.lang.IFn
+  clojure.lang.Fn
   (wrap [this handler]
     (this handler)))

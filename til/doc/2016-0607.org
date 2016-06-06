@@ -1,0 +1,95 @@
+* Keyword usage
+
+  Clojure のキーワードについてまとめる( Clojure 1.8 まで / 1.9 で入ってくる(だろう) namespeced maps や spec の話はとりあえずスキップ)
+
+
+** キーワードとは
+
+   シンボルに似たもので以下のような特徴を持つ
+
+   - キーワードは必ずコロン(=:=)からはじまる ( =:fred= のように)
+   - シンボルのようにネームスペースを含むことができる ( =:person/name= )
+     - つまり =namespace= 関数でネームスペース相当だけ取得できる
+   - コロンふたつ(=::=)から始まる場合現在のネームスペースで解決される
+     - =user= ネームスペースのとき =::rect= は =:user/rect= と読める
+     - ただし、ネームスペースに対して別名で require したネームスペースをキーワードのネースペースとして利用すると、そのネームスペースで修飾される ( =example= ネームスペースを =e= として require していた場合、 =::e/foo= は =:example/foo= となる )
+
+   #+begin_src clojure
+   (ns example)
+
+   (ns user
+     (:require [example :as e]))
+
+   ::e/foo
+   ;; :example/foo
+   #+end_src
+
+   http://clojure.org/reference/reader
+
+   (リファレンスではピリオド(=.=)を含めることが出来ないとあるけど、実際の Clojure の挙動と異なる)
+
+** 関数としてのキーワード
+
+   #+begin_src clojure
+   (def m {:foo 1 :bar 2})
+   ;; #'user/m
+
+   (:foo m)
+   ;; 1
+
+   (:baz m)
+   ;; nil
+
+   (:baz m :none)
+   ;; :none
+   #+end_src
+
+   キーワードはマップを引数にとる関数として使うことが出来る。また =get= と同様の動きをするので該当するキーがマップに存在しないときに返却する初期値を設定できる。
+
+   また関数として利用出来るので、以下のように利用することも当然可能となっている。
+
+   #+begin_src clojure
+   (def v [{:name "ayato-p" :id 1} {:name "alea12" :id 2} {:name "zer0-u" :id 3}])
+
+   (map :name v)
+   ;; ("ayato-p" "alea12" "zer0-u")
+
+   (map (juxt :id :name) v)
+   ;; ([1 "ayato-p"] [2 "alea12"] [3 "zer0-u"])
+
+   (map (comp clojure.string/upper-case :name) v)
+   ;; ("AYATO-P" "ALEA12" "ZER0-U")
+
+   (sort (comp pos? :id) v)
+   ;; ({:name "zer0-u", :id 3} {:name "alea12", :id 2} {:name "ayato-p", :id 1})
+   #+end_src
+
+   http://clojure.org/reference/data_structures
+
+** 分配束縛でのキーワード
+
+   分配束縛する際、分配束縛する先がキーワードであると分かっていれば =:keys= を利用することが出来ます。
+
+   #+begin_src clojure
+   (def user {:name "ayato-p" :id 1 :age 25})
+
+   (let [{name :name} user]
+     name)
+   ;; "ayato-p"
+
+   (let [{:keys [id name]} user]
+     [id name])
+   ;; [1 "ayato-p"]
+   #+end_src
+
+   また、このときネームスペース付きのキーワードであっても上手く解決されるようになっています。
+
+   #+begin_src clojure
+   (let [{:keys [:user/name]} {:user/name "ayato-p"}]
+     name)
+   ;; "ayato-p"
+   #+end_src
+
+   http://clojure.org/guides/destructuring
+
+   https://github.com/clojure/clojure/blob/master/changes.md#22-map-destructuring-extended-to-support-namespaced-keys

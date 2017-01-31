@@ -1,4 +1,1 @@
-* My first docker !
-
-  - =docker build . -t withdocker=
-  - =docker run -d -p 8080:8080 --name withdocker withdocker=
+* My sandbox

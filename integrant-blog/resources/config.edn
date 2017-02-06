@@ -1,0 +1,14 @@
+{$override* "config-local.edn"
+
+ :demo.component.web-server/server
+ {:port 3000}
+
+ :demo.component.database/database
+ {:dbtype "postgresql"
+  :dbname "my_blog"
+  :user #env :db-user
+  :password #env :db-password}
+
+ :demo.component.migrator/migrator
+ {:db #igref :demo.component.database/database
+  :path "migrations"}}

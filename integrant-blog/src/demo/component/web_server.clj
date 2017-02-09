@@ -7,7 +7,7 @@
   (res/response "Hello, world"))
 
 (defmethod ig/init-key ::server [_ {:keys [handler] :as opts}]
-  (web/run (or handler default-handler) opts))
+  (web/run (or handler default-handler) (dissoc opts :handler)))
 
 (defmethod ig/halt-key! ::server [_ server]
   (web/stop))

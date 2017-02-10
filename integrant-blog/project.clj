@@ -25,11 +25,19 @@
                  ;; config
                  [rkworks/baum "0.4.0"]
 
+                 ;; security
+                 [buddy/buddy-auth "1.4.1"]
+                 [buddy/buddy-hashers "1.2.0"]
+
+                 ;; html
+                 [hiccup "2.0.0-alpha1"]
+
                  ;; webjars
                  [org.webjars/bootstrap "3.3.7-1"]]
 
   :profiles
-  {:dev {:dependencies []
+  {:dev {:resource-paths ["dev-resources"]
+         :dependencies []
          :repl-options {:init-ns demo.repl}}
    :uberjar {:aot :all
              :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}})

@@ -1,8 +1,8 @@
-{$override* "config-local.edn"
+{$override* "dev-resources/config-local.edn"
 
  :demo.component.web-server/server
  {:port 3000
-  :handler #resolve demo.endpoint/handler}
+  :handler #igref :demo.component.endpoint/endpoint}
 
  :demo.component.database/database
  {:dbtype "postgresql"
@@ -12,4 +12,7 @@
 
  :demo.component.migrator/migrator
  {:db #igref :demo.component.database/database
-  :path "migrations"}}
+  :path "migrations"}
+
+ :demo.component.endpoint/endpoint
+ {:db #igref :demo.component.database/database}}

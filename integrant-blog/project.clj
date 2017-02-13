@@ -33,7 +33,10 @@
                  [hiccup "2.0.0-alpha1"]
 
                  ;; webjars
-                 [org.webjars/bootstrap "3.3.7-1"]]
+                 [org.webjars/bootstrap "3.3.7-1"]
+
+                 ;; util
+                 [inflections "0.12.2"]]
 
   :profiles
   {:dev {:resource-paths ["dev-resources"]

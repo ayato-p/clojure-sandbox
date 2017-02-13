@@ -1,5 +1,6 @@
 (ns demo.view.user
-  (:require [hiccup2.core :as h]))
+  (:require [hiccup.util :as u]
+            [hiccup2.core :as h]))
 
 (defn- user-list [users]
   [:table
@@ -11,4 +12,5 @@
 (defn index [users]
   (-> `([:h1 "ユーザーの一覧"]
         ~(user-list users))
-      h/html) )
+      h/html
+      str))

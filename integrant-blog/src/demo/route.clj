@@ -4,4 +4,4 @@
 
 (def app-routes
   ["/" {"" ::main/home
-        "users/" {"" ::user/index}}])
+        "users" {"" ::user/index}}])

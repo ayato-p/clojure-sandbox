@@ -1,0 +1,9 @@
+version: "3"
+services:
+  db:
+    image: postgres:9.6.5-alpine
+    environment:
+      POSTGRES_USER: alice
+      POSTGRES_DB: alice_db
+    ports:
+      - "5432:5432"

@@ -1,0 +1,2 @@
+{$include
+ [#resource "config/conf-2.edn"]}

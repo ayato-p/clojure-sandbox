@@ -1,0 +1,5 @@
+{$include
+ [#resource "config/conf-3.edn"]
+
+ :foo
+ {:y 2}}

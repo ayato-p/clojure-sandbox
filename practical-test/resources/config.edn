@@ -1,0 +1,16 @@
+{
+ :app/database
+ {}
+
+ :app/server
+ {:port 3000
+  :join? false
+  :handler #ig/ref :app/endpoint}
+
+ :app/endpoint
+ {:routes ["/" {"" :app.handler/home}]}
+
+ :app.handler/home
+ {}
+
+ }

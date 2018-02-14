@@ -1,4 +1,4 @@
-(ns demo.core-test
+(ns demo.core-tes
   (:require [clojure.test :as t]
             [demo.core :as sut]
             [integrant.core :as ig]
@@ -22,11 +22,14 @@
 
 (t/deftest real-database-test
   (let [system (ig/init sut/system-config [:myapp.handler/get-user])
-        get-user-fn (:myapp.handler/get-user system)]
-    (t/is (= (get-user-fn "athos")
-             {:username "athos"}))
-    (t/is (= (get-user-fn "ayato-p")
-             {:username "ayato-p"}))))
+        handler (:myapp.handler/get-user system)
+        gen-req (fn [username] {:params {:username username}})]
+    (t/is (= (handler (gen-req "athos"))
+             {:status 200
+              :body "athos"}))
+    (t/is (= (handler (gen-req "ayato-p"))
+             {:status 200
+              :body "ayato-p"}))))
 
 (t/deftest shrubbery-stub-test
   (let [user-database-stub (shrubbery/stub

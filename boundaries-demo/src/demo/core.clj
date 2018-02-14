@@ -46,8 +46,10 @@
 
 (defmethod ig/init-key :myapp.handler/get-user
   [_ {:keys [db]}]
-  (fn [username]
-    (get-user db username)))
+  (fn [req]
+    (let [username (get-in req [:params :username])]
+      {:status 200
+       :body (:username (get-user db username))})))
 
 (defn start-system []
   (ig/init system-config))

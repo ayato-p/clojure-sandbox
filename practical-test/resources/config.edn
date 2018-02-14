@@ -1,16 +1,24 @@
-{
- :app/database
- {}
+{:app/database
+ {:dbtype "postgresql"
+  :dbname "mydatabase"
+  :host "localhost"
+  :user "postgres"}
 
  :app/server
  {:port 3000
   :join? false
   :handler #ig/ref :app/endpoint}
 
- :app/endpoint
- {:routes ["/" {"" :app.handler/home}]}
+ :app/router
+ {:routes ["/" {"" :app.handler.home/index
+                "users" :app.handler.user/index}]}
 
- :app.handler/home
+ :app/endpoint
+ {:router #ig/ref :app/router}
+
+ ;; ring handlers
+ :app.handler.home/index
  {}
 
- }
+ :app.handler.user/index
+ {:db #ig/ref :app/database}}

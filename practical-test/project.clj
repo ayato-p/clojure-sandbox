@@ -7,7 +7,10 @@
                  [integrant "0.7.0-alpha1"]
                  [rkworks/baum "0.4.0"]
                  [ring "1.6.3"]
-                 [bidi "2.1.3"]]
+                 [bidi "2.1.3"]
+                 [org.clojure/java.jdbc "0.7.5"]
+                 [org.postgresql/postgresql "42.2.1"]
+                 [honeysql "0.9.1"]]
   :profiles
   {:dev {:source-paths ["env/dev/src" "src"]
          :dependencies [[integrant/repl "0.3.0"]

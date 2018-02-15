@@ -1,3 +1,3 @@
 (ns demo.boundary.mailer)
 
-(defrecord MailerBoundary [])
+(defrecord MailerBoundary [smtp from])

@@ -3,7 +3,8 @@
             demo.system
             [integrant.core :as ig]
             [integrant.repl :refer [clear go halt init prep reset reset-all]]
-            [integrant.repl.state :as state]))
+            [integrant.repl.state :as state]
+            [ragtime.repl :refer [migrate rollback]]))
 
 (alter-var-root #'integrant.repl/init-system
                 (fn [_]

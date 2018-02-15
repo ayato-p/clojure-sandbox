@@ -1,8 +1,12 @@
 (ns demo.handler.home
-  (:require [integrant.core :as ig]
+  (:require [hiccup2.core :as h]
+            [integrant.core :as ig]
             [ring.util.response :as res]))
 
 (defmethod ig/init-key :app.handler.home/index
   [_ _]
   (fn home-index [req]
-    (res/response "Hello")))
+    (->> [:h1 "Demo Home"]
+         h/html
+         str
+         res/response)))

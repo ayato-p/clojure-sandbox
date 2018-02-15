@@ -1,11 +1,16 @@
 (ns demo.system
   (:require [bidi.bidi :as bidi]
             [bidi.ring :as bidi.ring]
+            [demo.boundary.mailer :as boundary.mailer]
             [demo.boundary.sql :as boundary.sql]
-            demo.handler.home
-            demo.handler.user
             [integrant.core :as ig]
+            ragtime.jdbc
             [ring.adapter.jetty :as jetty]))
+
+(require '[demo.handler.home]
+         '[demo.handler.user]
+         '[demo.middleware.html]
+         '[demo.middleware.ring-defaults])
 
 (defmethod ig/init-key :app/server
   [_ opts]
@@ -26,11 +31,26 @@
   [_ m]
   m)
 
-(defmethod ig/init-key :app/endpoint
-  [_ {:keys [router]}]
-  (let [{:keys [routes handler-fn]} router]
-    (bidi.ring/make-handler routes handler-fn)))
+(defmethod ig/prep-key :app/endpoint
+  [_ {:keys [middlewares] :as opts}]
+  (update opts :middlewares #(map ig/ref %)))
 
-(defmethod ig/init-key :app/database
+(defmethod ig/init-key :app/endpoint
+  [_ {:keys [router middlewares]}]
+  (let [{:keys [routes handler-fn]} router]
+    (reduce #(%2 %1)
+            (bidi.ring/make-handler routes handler-fn)
+            middlewares)))
+
+(defmethod ig/init-key ::mailer
+  [_ {:keys [smtp from] :as settings}]
+  (boundary.mailer/map->MailerBoundary settings))
+
+(defmethod ig/init-key ::database
   [_ db-spec]
   (boundary.sql/map->SQLBoundary db-spec))
+
+(defmethod ig/init-key :app/migrator
+  [_ {:keys [db migrations-dir]}]
+  {:datastore (ragtime.jdbc/sql-database db)
+   :migrations (ragtime.jdbc/load-resources migrations-dir)})

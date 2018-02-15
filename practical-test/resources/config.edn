@@ -1,8 +1,17 @@
-{:app/database
+{[:app/mailer :demo.system/mailer]
+ {:smtp {:host "localhost"
+         :port 1025}
+  :from "alice@acme.com"}
+
+ [:app/database :demo.system/database]
  {:dbtype "postgresql"
   :dbname "mydatabase"
   :host "localhost"
   :user "postgres"}
+
+ :app/migrator
+ {:db #ig/ref :app/database
+  :migrations-dir "migrations"}
 
  :app/server
  {:port 3000
@@ -11,14 +20,45 @@
 
  :app/router
  {:routes ["/" {"" :app.handler.home/index
-                "users" :app.handler.user/index}]}
+                "users" {:get :app.handler.user/index
+                         ["/" :user/id "/send-mail"] {:post :app.handler.user/send-mail}}}]}
 
  :app/endpoint
+ {:router #ig/ref :app/router
+  :middlewares
+  [:app.middleware/ensure-html
+   :app.middleware/cargo
+   :app.middleware/ring-defaults]}
+
+ ;; ring middlewares
+ :app.middleware/ring-defaults
+ {:params {:urlencoded true, :multipart true, :nested true, :keywordize true},
+  :cookies true,
+  :session {:flash true, :cookie-attrs {:http-only true, :same-site :strict}},
+  :security {:anti-forgery true,
+             :xss-protection {:enable? true, :mode :block},
+             :frame-options :sameorigin,
+             :content-type-options :nosniff},
+  :static {:resources "public"},
+  :responses {:not-modified-responses true,
+              :absolute-redirects true,
+              :content-types true,
+              :default-charset "utf-8"}}
+
+ :app.middleware/cargo
  {:router #ig/ref :app/router}
+
+ :app.middleware/ensure-html
+ {}
+
 
  ;; ring handlers
  :app.handler.home/index
  {}
 
  :app.handler.user/index
- {:db #ig/ref :app/database}}
+ {:db #ig/ref :app/database}
+
+ :app.handler.user/send-mail
+ {:db #ig/ref :app/database
+  :mailer #ig/ref :app/mailer}}

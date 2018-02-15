@@ -22,4 +22,8 @@
   {:dev {:source-paths ["env/dev/src" "src"]
          :dependencies [[com.gearswithingears/shrubbery "0.4.1"]
                         [integrant/repl "0.3.0"]
-                        [fudje "0.9.7"]]}})
+                        [fudje "0.9.7"]
+                        [flare "0.2.9"]]
+         :injections
+         [(require 'flare.clojure-test)
+          (flare.clojure-test/install!)]}})

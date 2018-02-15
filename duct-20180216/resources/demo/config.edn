@@ -1,0 +1,8 @@
+{:duct.core/project-ns  demo
+ :duct.core/environment :production
+
+ :duct.module/logging {}
+ :duct.module/web {}
+ 
+ :duct.router/cascading
+ []}

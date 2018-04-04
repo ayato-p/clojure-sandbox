@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:10.3
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./docker/dev/postgres/data:/var/lib/postgresql/data
+      - ./docker/dev/postgres/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+    ports:
+      - "5432:5432"

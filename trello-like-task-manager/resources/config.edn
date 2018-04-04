@@ -1,0 +1,15 @@
+{:app/database
+ {:dbtype "postgresql"
+  :dbname "demo"
+  :host "localhost"
+  :port 5432
+  :user "demo"}
+
+ :app/hikari-cp
+ {:db-spec #ig/ref :app/database
+  :pool-options
+  {:pool-name "demo-pool"}}
+
+ :app/ragtime
+ {:db-spec #ig/ref :app/database
+  :migration-dir "migrations"}}

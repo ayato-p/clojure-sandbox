@@ -22,13 +22,21 @@
        (conj pool-options)
        hikari-cp/make-datasource))
 
+(defmethod ig/halt-key! :app/hikari-cp
+  [_ datasource]
+  (.close datasource))
+
 (defmethod ig/init-key :app/ragtime
   [_ {:keys [db-spec migration-dir]}]
   {:datastore (rag.jdbc/sql-database db-spec)
    :migrations (rag.jdbc/load-resources migration-dir)})
 
-(defn prep []
-  (ig/prep (conf/read-config "config.edn")))
+(defn prep
+  ([] (prep "config.edn"))
+  ([filename]
+   (ig/prep (conf/read-config filename))))
 
-(defn start []
-  (ig/init (prep)))
+(defn start
+  ([] (start "config.edn"))
+  ([filename]
+   (ig/init (prep filename))))

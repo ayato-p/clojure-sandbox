@@ -10,7 +10,8 @@
   left join boards as b
   on b.board_uuid = t_pos.board_uuid
   left join board_orders as b_ord
-  on b_ord.board_uuid = b.board_uuid")
+  on b_ord.board_uuid = b.board_uuid
+  order by board_order, task_order")
 
 (defn find-tasks [db]
   (db/fetch db find-tasks*))
@@ -39,7 +40,6 @@
 (defn peel-task-off [db task-uuid]
   (db/with-db-transaction [db (db/->db-spec db) {:isolation :serializable}]
     (reorder-tasks db task-uuid :dec)
-    (db/execute db ["delete from task_positions where task_uuid = ?" task-uuid])
     (db/execute db ["delete from task_positions where task_uuid = ?" task-uuid])))
 
 (defn put-task-on-board
@@ -52,12 +52,15 @@
            (db/execute db [(str
                             "insert into task_positions (task_uuid, board_uuid, task_order) values"
                             " (?, ?, (select count(task_uuid) from task_positions where board_uuid = ? "
-                            " and task_order <= (select task_order from task_positions where task_uuid = ?)) + 1)") task-uuid board-uuid board-uuid to-task-uuid]))
+                            " and task_order <= (select task_order from task_positions where task_uuid = ?)))") task-uuid board-uuid board-uuid to-task-uuid]))
        (db/execute db [(str
                         "insert into task_positions (task_uuid, board_uuid, task_order) values"
                         " (?, ?, (select count(task_uuid) from task_positions where board_uuid = ?))") task-uuid board-uuid board-uuid])))))
 
-(defn reput-task-on-board [db task-uuid board-uuid]
-  (db/with-db-transaction [db (db/->db-spec db) {:isolation :serializable}]
-    (peel-task-off db task-uuid)
-    (put-task-on-board db task-uuid board-uuid)))
+(defn reput-task-on-board
+  ([db task-uuid board-uuid]
+   (reput-task-on-board db task-uuid board-uuid nil))
+  ([db task-uuid board-uuid to-task-uuid]
+   (db/with-db-transaction [db (db/->db-spec db) {:isolation :serializable}]
+     (peel-task-off db task-uuid)
+     (put-task-on-board db task-uuid board-uuid to-task-uuid))))

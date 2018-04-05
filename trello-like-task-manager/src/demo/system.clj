@@ -30,5 +30,5 @@
 (defn prep []
   (ig/prep (conf/read-config "config.edn")))
 
-(defn init []
+(defn start []
   (ig/init (prep)))

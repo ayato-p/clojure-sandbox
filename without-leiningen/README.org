@@ -1,0 +1,73 @@
+* Clojureのコードをコンパイルしていたら早くなるのか検証してみた
+
+
+** 結論
+
+多少早くなる。ただし、AtCoderなどの競プロでTLEにならなくなるかは良く分からない。
+
+
+** 試し方
+
+AtCoderのテストを通すために[[https://github.com/kmyk/online-judge-tools][Online Judge Tools]]というのを利用してみた。
+例えば[[https://beta.atcoder.jp/contests/abc083/tasks/abc083_b][ABC083B]]をテストしたい場合は以下のようにする。
+
+#+BEGIN_SRC shell
+$ rm -rf test
+$ oj download https://beta.atcoder.jp/contests/abc083/tasks/abc083_b
+# コードを書く(./src/main.clj)
+$ make deps && make compile
+# ↓ これが実際のテスト
+$ oj test -c ./run-test.sh
+#+END_SRC
+
+*** コンパイルする場合の注意点
+
+=-main= 関数の中で実行するコードを呼び出してください。例えばABC086Aの解答例は以下の通りです。
+
+#+BEGIN_SRC clojure
+;; src/main.clj
+(ns main
+  (:gen-class))
+
+(defn product [a b]
+  (if (zero? (rem (* a b) 2))
+    "Even"
+    "Odd"))
+
+(defn -main []
+  (println (product (read) (read))))
+#+END_SRC
+
+オリジナルのコードはここから
+https://qiita.com/fireflower0/items/92af088fea314a6cbcc2
+
+また run-test.sh は以下のように maek run を実行するように変更してください。
+
+#+BEGIN_SRC shell
+#!/bin/bash
+make run
+#+END_SRC
+
+*** コンパイルしない場合の注意点
+
+[[https://qiita.com/fireflower0/items/92af088fea314a6cbcc2][ココ]]にある例のように =-main= 関数など作らずソースを読み込んだら自動的に実行される形にしてください。
+
+#+BEGIN_SRC clojure
+;; src/main.clj
+(ns main)
+
+(defn product [a b]
+  (if (zero? (rem (* a b) 2))
+    "Even"
+    "Odd"))
+
+(println (product (read) (read)))
+#+END_SRC
+
+また run-test.sh は以下のように make src-run を実行するように変更してください。
+このとき事前の make compile は不要です。
+
+#+BEGIN_SRC shell
+#!/bin/bash
+make src-run
+#+END_SRC

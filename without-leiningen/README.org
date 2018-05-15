@@ -41,7 +41,7 @@ $ oj test -c ./run-test.sh
 オリジナルのコードはここから
 https://qiita.com/fireflower0/items/92af088fea314a6cbcc2
 
-また run-test.sh は以下のように maek run を実行するように変更してください。
+また run-test.sh は以下のように make run を実行するように変更してください。
 
 #+BEGIN_SRC shell
 #!/bin/bash
